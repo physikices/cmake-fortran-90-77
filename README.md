@@ -49,13 +49,13 @@ cd my_project/
 The main executable will be generated in:
 
 ```
-bin/my_exe
+bin/app_exe
 ```
 
 ### 2. Run the Program
 
 ```bash
-./bin/my_exe
+./bin/app_exe
 ```
 
 or
