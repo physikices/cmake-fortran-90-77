@@ -221,26 +221,6 @@ if ! ctest --test-dir build; then
 fi
 EOF
 
-# Use tput for portable color output
-BLUE=$(tput setaf 4)
-YELLOW=$(tput setaf 3)
-CYAN=$(tput setaf 6)
-RESET=$(tput sgr0)
-
-# Optional: allow setting build directory via argument or environment variable
-BUILD_DIR="${1:-${BUILD_DIR:-build}}"
-
-echo "${BLUE}Removing previous build directory: $BUILD_DIR${RESET}"
-rm -rf "$BUILD_DIR"
-
-echo "${YELLOW}Configuring project with CMake...${RESET}"
-cmake -S . -B "$BUILD_DIR"
-
-echo "${CYAN}Building project...${RESET}"
-cmake --build "$BUILD_DIR"
-
-echo "${CYAN}Build completed successfully.${RESET}"
-
 ### Inicializa Git
 chmod +x install.sh run.sh test.sh
 git init
