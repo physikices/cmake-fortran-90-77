@@ -1,20 +1,22 @@
-#!/bin/bash
-
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
 YELLOW=$(tput setaf 3)
 BLUE=$(tput setaf 4)
 CYAN=$(tput setaf 6)
 RESET=$(tput sgr0)
 
-read -p "Enter the project name (default: my_project): " PROJ
+read -rp "Enter the project name (default: my_project): " PROJ
 PROJ=${PROJ:-my_project}
 echo "Creating project: $PROJ"
 
-mkdir -p $PROJ/{src,libF77,modules,tests,bin}
-cd $PROJ
+if ! mkdir -p "$PROJ"/{src,libF77,modules,tests,bin}; then
+  echo "Error: Could not create project directories." >&2
+  exit 1
+fi
+cd "$PROJ" || { echo "Error: Could not cd into $PROJ"; exit 1; }
 
-### CMakeLists.txt principal
+### CMakeLists.txt config file
 cat > CMakeLists.txt << 'EOF'
 cmake_minimum_required(VERSION 3.21)
 project(app_exe
@@ -221,18 +223,18 @@ if ! ctest --test-dir build; then
 fi
 EOF
 
-### Inicializa Git
+### Make scripts executable
 chmod +x install.sh run.sh test.sh
+
+### Initialize git
 git init
 git add .
 git commit -m "Initial commit: Fortran modular project with CMake"
 
-
-
-echo "-> ${BLUE}Project $PROJ successfully built.${RESET}"
+echo "-> ${BLUE}Project ""$PROJ"" successfully built.${RESET}"
 echo "-> To rebuild the project:"
-echo "   ${YELLOW}cd $PROJ/${RESET}"
+echo "   ${YELLOW}cd ""$PROJ""/${RESET}"
 echo "   ${CYAN}./install.sh${RESET}"
 echo "-> run and test the project:"
-echo "   ${YELLOW}cd $PROJ/${RESET}"
+echo "   ${YELLOW}cd ""$PROJ""/${RESET}"
 echo "   ${CYAN}./run.sh${RESET} && ${CYAN}./test.sh${RESET}"
