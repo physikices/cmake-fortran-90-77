@@ -53,27 +53,6 @@ To initialize a new project from the template:
 
 The initialization script automatically renders all .in template files using environment variables (e.g., $PROJECT_NAME), placing the processed outputs in the correct directories.
 
-## 🔄 Auto-Rebuild/Run/Test (Optional)
-
-For development, you can enable automatic rebuilds when Fortran files change:
-
-```zsh
- cd my_project/
- chmod +x launch.sh
- ./launch.sh watch
-```
-
-To run the project/test automatically:
-
-```zsh
- ./launch.sh run
-```
-and
-
-```zsh
- ./launch.sh test
-```
----
 
 ## 🚀 Build and Run Manually
 
@@ -124,6 +103,28 @@ ctest
 Test project /path/to/build
     Start 1: run_tests
 1/1 Test #1: run_tests ..................   Passed
+```
+---
+
+## 🔄 Auto-Rebuild/Run/Test (Optional)
+
+For development, you can enable automatic rebuilds when Fortran files change:
+
+```zsh
+ cd my_project/
+ chmod +x launch.sh
+ ./launch.sh watch
+```
+
+To run the project/test automatically:
+
+```zsh
+ ./launch.sh run
+```
+and
+
+```zsh
+ ./launch.sh test
 ```
 
 ---
