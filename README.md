@@ -38,14 +38,6 @@ my_project/
 
 Make sure these tools are available in your PATH, executing `cmake --version`, `gfortran --version`, `inotifywait -h` and `make --version` should work.
 
-Or install automatically using the `launch.sh` script:
-
-```bash
- cd cmake-fortran-90-77/my_project/
- chmod +x launch.sh
- ./launch.sh install
-```
-
 ---
 
 ## 🚀 Getting Started
