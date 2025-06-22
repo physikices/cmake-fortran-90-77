@@ -12,7 +12,7 @@ EXECUTABLE="@PROJECT_NAME@.bin"
 
 # Build function
 build() {
-    echo "-> ${BLUE}Building project...${RESET}"
+    echo "${BLUE}:: Building project...${RESET}"
     cmake -B "$BUILD_DIR" -S .
     cmake --build "$BUILD_DIR"
     echo "-> ${CYAN}Build complete.${RESET}"
@@ -20,21 +20,21 @@ build() {
 
 # Run function
 run() {
-    echo "-> ${CYAN}Running project...${RESET}"
+    echo "${CYAN}:: Running project...${RESET}"
     "./$BIN_DIR/$EXECUTABLE"
 }
 
 # Function to install dependencies
 install() {
-    echo "-> Checking dependencies..."
+    echo "${GREEN}:: Checking dependencies...${RESET}"
 
     # List of required command-line tools
     local dependencies=(cmake gfortran make inotifywait)
 
     for dep in "${dependencies[@]}"; do
         if ! command -v "$dep" &> /dev/null; then
-            echo "-> ${YELLOW}dependency not found:${RESET} $dep"
-            echo "-> ${GREEN}Installing${RESET} $dep..."
+            echo "${YELLOW}-- dependency not found:${RESET} $dep"
+            echo "${GREEN} Installing${RESET} $dep..."
 
             if [[ -x "$(command -v apt)" ]]; then
                 sudo apt update && sudo apt install -y "$dep"
@@ -46,31 +46,32 @@ install() {
                 echo "-> Unsupported package manager. Please install $dep manually."
             fi
         else
-            echo "-> $dep is already installed."
+            echo "-- $dep is already installed."
         fi
     done
 
-    echo "-> ${GREEN}All dependencies are up to date.${RESET}"
+    echo "${GREEN}-- All dependencies are up to date.${RESET}"
 }
 
 # Function to run tests
 test_project() {
-    echo "-> ${YELLOW}Running tests...${RESET}"
+    echo "${YELLOW}:: Running tests...${RESET}"
     ctest --test-dir "$BUILD_DIR"
 }
 
 # Function to watch for changes
 watch() {
-    echo "-> ${BLUE}Watching for changes in .f90 or .f files...${RESET}"
+    echo "${BLUE}:: Watching for changes in .f90 or .f files...${RESET}"
     command -v inotifywait >/dev/null 2>&1 || {
         echo "-> '${YELLOW}inotifywait' is not installed. Run: sudo pacman -Syyu inotify-tools${RESET}"
         exit 1
     }
 
     while true; do
-        inotifywait -e modify -e create -e delete -r --include '\.f90$|\.f$' src/ modules/ libF77/
-        echo "-> ${YELLOW}Change detected. Rebuilding...${RESET}"
+        inotifywait -e modify -e create -e delete --include '\.f90$|\.f$' src/ modules/ libF77/
+        echo "${YELLOW}:: Change detected. Rebuilding...${RESET}"
         build
+        run
     done
 }
 
