@@ -58,7 +58,7 @@ The initialization script automatically renders all .in template files using env
 
 ### 1. Build
 
-In the created project folder, run the commands:
+In the created project folder, e.g. `my_project/`, run the commands:
 ```bash
 mkdir build
 cd build
@@ -94,10 +94,11 @@ This project uses [CTest](https://cmake.org/cmake/help/latest/manual/ctest.1.htm
 
 ### 1. Run Tests:
 
-In the created project folder, run the commands:
+In the created project folder, e.g. `my_project/`, run the commands:
 ```bash
 cd build
 ctest
+cd ..
 ```
 
 ### 2. Expected Output:
