@@ -1,10 +1,10 @@
-# Fortran Modular Project Template 🚀
+# Fortran Modular (90/77) Project Template 🚀
 
 This project provides a clean, modular template for developing scientific applications in Fortran using CMake. It supports separation of concerns via directories for modules, libraries, tests, and executables, and it includes helper scripts for building, running, and testing.
 
 ## 📦 Features
 
-- Modular Fortran 90/95 code organization
+- Modular Fortran 90/77 code organization
 - CMake-based build system
 - Built-in support for unit testing
 - Template-based project initialization
@@ -42,7 +42,7 @@ my_project/
 
 To initialize a new project from the template:
 
-```bash
+```zsh
  chmod +x install.sh
  ./install.sh
 ```
@@ -52,19 +52,31 @@ To initialize a new project from the template:
 
 The initialization script automatically renders all .in template files using environment variables (e.g., $PROJECT_NAME), placing the processed outputs in the correct directories.
 
-## 🔄 Auto-Rebuild (Optional)
+## 🔄 Auto-Rebuild/Run/Test (Optional)
 
 For development, you can enable automatic rebuilds when Fortran files change:
 
-```
+```zsh
  ./launch.sh watch
 ```
+
+To run the project/test automatically:
+
+```zsh
+ ./launch.sh run
+```
+and
+
+```zsh
+ ./launch.sh test
+```
+---
 
 ## 🚀 Build and Run Manually
 
 ### 1. Build
 
-```bash
+```zsh
 mkdir build
 cd build
 cmake ..
@@ -73,13 +85,13 @@ make
 
 The main executable will be generated in:
 
-```
+```zsh
 bin/my_project.bin
 ```
 
 ### 2. Run the Program
 
-```bash
+```zsh
 ./bin/my_project.bin
 ```
 
