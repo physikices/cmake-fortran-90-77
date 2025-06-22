@@ -112,10 +112,8 @@ Test project /path/to/build
 
 ## 🔄 Auto-Rebuild/Run/Test (Optional)
 
-For development, you can enable automatic rebuilds when Fortran files change:
-
+For development, you can enable automatic rebuilds when Fortran files change, in the created project folder, e.g. `my_project/`, run the commands:
 ```zsh
- cd my_project/
  chmod +x launch.sh
  ./launch.sh watch
 ```
