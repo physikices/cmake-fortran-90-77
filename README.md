@@ -36,13 +36,23 @@ my_project/
 - [inotify](https://man7.org/linux/man-pages/man7/inotify.7.html)
 - Make (on Unix-like systems)
 
+Make sure these tools are available in your PATH, executing `cmake --version`, `gfortran --version`, `inotifywait -h` and `make --version` should work.
+
+Or install automatically using the `launch.sh` script:
+
+```bash
+ cd cmake-fortran-90-77/my_project/
+ chmod +x launch.sh
+ ./launch.sh install
+```
+
 ---
 
 ## 🚀 Getting Started
 
 To initialize a new project from the template:
 
-```zsh
+```bash
  cd cmake-fortran-90-77/
  chmod +x install.sh
  ./install.sh
@@ -69,13 +79,13 @@ cd ..
 
 The main executable will be generated in:
 
-```zsh
+```bash
 bin/my_project.bin
 ```
 
 ### 2. Run the Program
 
-```zsh
+```bash
 ./bin/my_project.bin
 ```
 
@@ -113,19 +123,19 @@ Test project /path/to/build
 ## 🔄 Auto-Rebuild/Run/Test (Optional)
 
 For development, you can enable automatic rebuilds when Fortran files change, in the created project folder, e.g. `my_project/`, run the commands:
-```zsh
+```bash
  chmod +x launch.sh
  ./launch.sh watch
 ```
 
 To run the project/test automatically:
 
-```zsh
+```bash
  ./launch.sh run
 ```
 and
 
-```zsh
+```bash
  ./launch.sh test
 ```
 
