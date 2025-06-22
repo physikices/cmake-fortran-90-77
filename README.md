@@ -58,11 +58,13 @@ The initialization script automatically renders all .in template files using env
 
 ### 1. Build
 
-```zsh
+In the created project folder, run the commands:
+```bash
 mkdir build
 cd build
 cmake ..
 make
+cd ..
 ```
 
 The main executable will be generated in:
@@ -92,6 +94,7 @@ This project uses [CTest](https://cmake.org/cmake/help/latest/manual/ctest.1.htm
 
 ### 1. Run Tests:
 
+In the created project folder, run the commands:
 ```bash
 cd build
 ctest
