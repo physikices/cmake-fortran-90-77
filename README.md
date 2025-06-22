@@ -22,9 +22,7 @@ my_project/
 ├── bin/ # Output binaries
 ├── scripts/ # Utility shell scripts
 ├── CMakeLists.txt # Main CMake build configuration
-├── run.sh # Script to run the executable
-├── install.sh # Script to configure and build the project
-├── test.sh # Script to run the tests
+├── launch.sh # Script to build/run/test the executables
 └── .gitignore
 ```
 ---
