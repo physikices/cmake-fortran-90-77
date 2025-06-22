@@ -43,7 +43,7 @@ my_project/
 To initialize a new project from the template:
 
 ```zsh
- cd my_project/
+ cd cmake-fortran-90-77/
  chmod +x install.sh
  ./install.sh
 ```
