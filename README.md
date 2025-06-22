@@ -43,6 +43,7 @@ my_project/
 To initialize a new project from the template:
 
 ```zsh
+ cd my_project/
  chmod +x install.sh
  ./install.sh
 ```
@@ -57,6 +58,8 @@ The initialization script automatically renders all .in template files using env
 For development, you can enable automatic rebuilds when Fortran files change:
 
 ```zsh
+ cd my_project/
+ chmod +x launch.sh
  ./launch.sh watch
 ```
 
