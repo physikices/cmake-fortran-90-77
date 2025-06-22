@@ -1,0 +1,3 @@
+file(GLOB lib_sources CONFIGURE_DEPENDS *.f)
+add_library(${PROJECT_NAME}-libF77 STATIC ${lib_sources})
+target_include_directories(${PROJECT_NAME}-libF77 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -1,0 +1,14 @@
+# Build artifacts
+/build/
+/bin/
+/*.mod
+/*.o
+/CMakeFiles/
+/CMakeCache.txt
+/Makefile
+/install_manifest.txt
+
+# Editor/OS files
+*.swp
+*.swo
+*.DS_Store

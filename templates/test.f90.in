@@ -1,0 +1,16 @@
+program test_model
+  use physics_model
+  implicit none
+  double precision :: x, y
+
+  x = 2.0d0
+  y = model_function(x)
+
+  if (abs(y - 5.0d0) < 1.0d-6) then
+    print *, 'Teste OK.'
+    stop 0
+  else
+    print *, 'Teste falhou: y =', y
+    stop 1
+  end if
+end program test_model

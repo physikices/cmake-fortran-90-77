@@ -1,0 +1,10 @@
+enable_testing()
+
+add_executable(test_${PROJECT_NAME} test.f90)
+target_link_libraries(test_${PROJECT_NAME}
+  PRIVATE ${PROJECT_NAME}-modules
+  PRIVATE ${PROJECT_NAME}-libF77
+)
+target_include_directories(test_${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/modules)
+
+add_test(NAME run_tests COMMAND test_${PROJECT_NAME})

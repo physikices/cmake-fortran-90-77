@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.21)
+project(@PROJECT_NAME@.bin
+  VERSION 0.1.0
+  DESCRIPTION "@PROJECT_DESC@"
+  LANGUAGES Fortran
+)
+
+enable_language(Fortran)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+add_subdirectory(libF77)
+add_subdirectory(modules)
+add_subdirectory(tests)
+enable_testing()
+
+add_executable(${PROJECT_NAME})
+target_sources(${PROJECT_NAME} PRIVATE src/main.f90)
+target_link_libraries(${PROJECT_NAME}
+  PRIVATE ${PROJECT_NAME}-modules
+  PRIVATE ${PROJECT_NAME}-libF77
+)
+target_include_directories(${PROJECT_NAME} PRIVATE modules)

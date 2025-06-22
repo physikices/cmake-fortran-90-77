@@ -1,0 +1,9 @@
+module physics_model
+  implicit none
+ contains
+  function model_function(x) result(y)
+    double precision, intent(in) :: x
+    double precision :: y
+    y = x**2 + 1.0d0
+  end function model_function
+end module physics_model

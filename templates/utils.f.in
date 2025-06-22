@@ -1,0 +1,4 @@
+       subroutine print_banner()
+       print *, '========== T4C FORTRAN PROJECT =========='
+       return
+       end

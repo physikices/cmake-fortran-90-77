@@ -1,0 +1,10 @@
+program main
+  use physics_model
+  implicit none
+  double precision :: x, result
+
+  x = 3.0d0
+  call print_banner()
+  result = model_function(x)
+  print *, 'Resultado da função física =', result
+end program main
