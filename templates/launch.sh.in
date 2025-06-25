@@ -29,7 +29,7 @@ install() {
     echo "${GREEN}:: Checking dependencies...${RESET}"
 
     # List of required command-line tools
-    local dependencies=(cmake gfortran make inotifywait)
+    local dependencies=(cmake gfortran make inotify-tools)
 
     for dep in "${dependencies[@]}"; do
         if ! command -v "$dep" &> /dev/null; then
