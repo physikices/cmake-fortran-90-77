@@ -1,98 +1,122 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source "$(dirname "$0")/scripts/colors.sh"
+
+COLOR_SCRIPT="$(dirname "$0")/scripts/colors.sh"
+if [[ -f "$COLOR_SCRIPT" ]]; then
+  source "$COLOR_SCRIPT"
+else
+  echo "Warning: colors.sh not found, proceeding without color output."
+  BLUE="" CYAN="" GREEN="" YELLOW="" RED="" RESET=""
+fi
 
 # Environment variables
 BUILD_DIR="build"
 SRC_DIR="src"
 BIN_DIR="bin"
+WATCH_DIRS=("src" "modules" "libF77")
+WATCH_PATTERN='\.f90$|\.f$'
 
 # Exectable name
 EXECUTABLE="@PROJECT_NAME@.bin"
 
 # Build function
 build() {
-    echo "${BLUE}:: Building project...${RESET}"
-    cmake -B "$BUILD_DIR" -S .
-    cmake --build "$BUILD_DIR"
-    echo "-> ${CYAN}Build complete.${RESET}"
+  echo "${BLUE}:: Building project...${RESET}"
+  if ! cmake -B "$BUILD_DIR" -S .; then
+    echo "${RED}CMake configuration failed.${RESET}"
+    exit 1
+  fi
+  if ! cmake --build "$BUILD_DIR"; then
+    echo "${RED}Build failed.${RESET}"
+    exit 1
+  fi
+  echo "-> ${CYAN}Build complete.${RESET}"
 }
 
 # Run function
 run() {
-    echo "${CYAN}:: Running project...${RESET}"
-    "./$BIN_DIR/$EXECUTABLE"
+  echo "${CYAN}:: Running project...${RESET}"
+  exec "./$BIN_DIR/$EXECUTABLE"
 }
 
 # Function to install dependencies
 install() {
-    echo "${GREEN}:: Checking dependencies...${RESET}"
+  echo "${GREEN}:: Checking dependencies...${RESET}"
 
-    # List of required command-line tools
-    local dependencies=(cmake gfortran make inotifywait)
+  # List of required command-line tools
+  local dependencies=(cmake gfortran make inotifywait)
 
-    for dep in "${dependencies[@]}"; do
-        if ! command -v "$dep" &> /dev/null; then
-            echo "${YELLOW}-- dependency not found:${RESET} $dep"
-            echo "${GREEN} Installing${RESET} $dep..."
+  for dep in "${dependencies[@]}"; do
+    if ! command -v "$dep" &> /dev/null; then
+      echo "${YELLOW}-- dependency not found:${RESET} $dep"
+      echo "${GREEN} Installing${RESET} $dep..."
 
-            if [[ -x "$(command -v apt)" ]]; then
-                sudo apt update && sudo apt install -y "$dep"
-            elif [[ -x "$(command -v dnf)" ]]; then
-                sudo dnf install -y "$dep"
-            elif [[ -x "$(command -v pacman)" ]]; then
-                sudo pacman -Sy "$dep" --noconfirm
-            else
-                echo "-> Unsupported package manager. Please install $dep manually."
-            fi
-        else
-            echo "-- $dep is already installed."
-        fi
-    done
+      if [[ -x "$(command -v apt)" ]]; then
+        sudo apt update && sudo apt install -y "$dep"
+      elif [[ -x "$(command -v dnf)" ]]; then
+        sudo dnf install -y "$dep"
+      elif [[ -x "$(command -v pacman)" ]]; then
+        sudo pacman -Sy "$dep" --noconfirm
+      else
+        echo "-> Unsupported package manager. Please install $dep manually."
+      fi
+    else
+      echo "-- $dep is already installed."
+    fi
+  done
 
-    echo "${GREEN}-- All dependencies are up to date.${RESET}"
+  echo "${GREEN}-- All dependencies are up to date.${RESET}"
 }
 
 # Function to run tests
 test_project() {
-    echo "${YELLOW}:: Running tests...${RESET}"
-    ctest --test-dir "$BUILD_DIR"
+  echo "${YELLOW}:: Running tests...${RESET}"
+  ctest --test-dir "$BUILD_DIR"
+}
+
+# Function to clean build artifacts
+clean() {
+  echo "${RED}:: Cleaning build artifacts...${RESET}"
+  rm -rf "$BUILD_DIR" "$BIN_DIR"
+  echo "${GREEN}:: Clean complete.${RESET}"
 }
 
 # Function to watch for changes
 watch() {
-    echo "${BLUE}:: Watching for changes in .f90 or .f files...${RESET}"
-    command -v inotifywait >/dev/null 2>&1 || {
-        echo "-> '${YELLOW}inotifywait' is not installed. Run: sudo pacman -Syyu inotify-tools${RESET}"
-        exit 1
+  echo "${BLUE}:: Watching for changes in .f90 or .f files...${RESET}"
+  command -v inotifywait >/dev/null 2>&1 || {
+    echo "-> '${YELLOW}inotifywait' is not installed. Run: sudo pacman -Syyu inotify-tools${RESET}"
+      exit 1
     }
 
-    while true; do
-        inotifywait -e modify -e create -e delete --include '\.f90$|\.f$' src/ modules/ libF77/
-        echo "${YELLOW}:: Change detected. Rebuilding...${RESET}"
-        build
-        run
-    done
+  while true; do
+    inotifywait -e modify -e create -e delete --include "$WATCH_PATTERN" "${WATCH_DIRS[@]}"
+    echo "${YELLOW}:: Change detected. Rebuilding...${RESET}"
+    build
+    "./$BIN_DIR/$EXECUTABLE"
+  done
 }
 
 # Help
 help() {
-    echo "Usage: ./launch.sh <command>"
-    echo ""
-    echo "Available commands:"
-    echo "  build       Build the project with CMake"
-    echo "  run         Run the main executable"
-    echo "  test        Run tests with CTest"
-    echo "  install     Install system or library dependencies"
-    echo "  help        Show this message"
+  echo "Usage: ./launch.sh <command>"
+  echo ""
+  echo "Available commands:"
+  echo "  build       Build the project with CMake"
+  echo "  run         Run the main executable"
+  echo "  test        Run tests with CTest"
+  echo "  install     Install system or library dependencies"
+  echo "  clean       Clean build artifacts"
+  echo "  help        Show this message"
 }
 
 # Main commands
 case "${1:-help}" in
-    install) install ;;
-    build) build ;;
-    run) run ;;
-    test) test_project ;;
-    watch) watch ;;
-    *) help ;;
+  install) install ;;
+  build) build ;;
+  run) run ;;
+  test) test_project ;;
+  watch) watch ;;
+  clean) clean ;;
+  *) help ;;
 esac
