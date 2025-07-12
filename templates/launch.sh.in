@@ -43,13 +43,10 @@ run() {
 install() {
   echo "${GREEN}:: Checking dependencies...${RESET}"
 
-<<<<<<< HEAD
   # List of required command-line tools
   local dependencies=(cmake gfortran make inotifywait)
-=======
-    # List of required command-line tools
-    local dependencies=(cmake gfortran make inotify-tools)
->>>>>>> 0a47a1b3b3e3464eb48f0dfefd1bb64b4f1e3d1e
+  # List of required command-line tools
+  local dependencies=(cmake gfortran make inotify-tools)
 
   for dep in "${dependencies[@]}"; do
     if ! command -v "$dep" &> /dev/null; then
