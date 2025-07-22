@@ -1,42 +1,50 @@
 cmake_minimum_required(VERSION 3.21)
+
 project(@PROJECT_NAME@
   VERSION 0.1.0
   DESCRIPTION "@PROJECT_DESC@"
   LANGUAGES Fortran
 )
 
-# Bibliotecas externas
+# ========== Global configuration ==========
+# Set output directories per configuration (Debug, Release)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+  string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UPPER)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UPPER} ${CMAKE_SOURCE_DIR}/bin)
+endforeach()
+
+# ========== External libraries ==========
 add_subdirectory(libF77)
 
-# Diretório de executáveis
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-
-# Flags
-add_compile_options("-Wa,--noexecstack")
-
-# Módulos
-file(GLOB_RECURSE dir_modules ${CMAKE_SOURCE_DIR}/modules/*.f90)
+# ========== Project modules ==========
+# Automatically collect all Fortran modules (*.f90) with dependency tracking
+file(GLOB_RECURSE dir_modules CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/modules/*.f90)
 
 add_library(@PROJECT_NAME@_modules STATIC ${dir_modules})
+
 set_target_properties(@PROJECT_NAME@_modules PROPERTIES
   Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/modules
+  Fortran_STANDARD 2008
 )
+
 target_include_directories(@PROJECT_NAME@_modules PUBLIC ${CMAKE_BINARY_DIR}/modules)
+target_compile_options(@PROJECT_NAME@_modules PRIVATE "-Wa,--noexecstack")
 
-# Programa principal
+# ========== Main executable ==========
 add_executable(@PROJECT_NAME@ ${CMAKE_SOURCE_DIR}/src/main.f90)
-target_link_libraries(@PROJECT_NAME@
-  PRIVATE @PROJECT_NAME@_modules
-  PRIVATE @PROJECT_NAME@_libf77  # Caso esta seja sua lib real
-)
-target_include_directories(@PROJECT_NAME@ PRIVATE ${CMAKE_BINARY_DIR}/modules)
 
-# Testes
-enable_testing()
-add_executable(@PROJECT_NAME@_test ${CMAKE_SOURCE_DIR}/tests/test.f90)
-target_link_libraries(@PROJECT_NAME@_test
+target_link_libraries(@PROJECT_NAME@
   PRIVATE @PROJECT_NAME@_modules
   PRIVATE @PROJECT_NAME@_libf77
 )
-target_include_directories(@PROJECT_NAME@_test PRIVATE ${CMAKE_BINARY_DIR}/modules)
-add_test(NAME TestModule COMMAND @PROJECT_NAME@_test)
+
+target_include_directories(@PROJECT_NAME@ PRIVATE ${CMAKE_BINARY_DIR}/modules)
+target_compile_options(@PROJECT_NAME@ PRIVATE "-Wa,--noexecstack")
+
+# ========== Install rules (optional) ==========
+install(TARGETS @PROJECT_NAME@ RUNTIME DESTINATION bin)
+
+# ========== Tests ==========
+enable_testing()
+add_subdirectory(tests)

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ========================== CONFIGURAÇÕES ===========================
+# ========================== CONFIGURATION ===========================
 
-# Cores
+# Colors
 COLOR_SCRIPT="$(dirname "$0")/.term/colors.sh"
 if [[ -f "$COLOR_SCRIPT" ]]; then
   source "$COLOR_SCRIPT"
@@ -11,35 +11,35 @@ else
   BLUE="" CYAN="" GREEN="" YELLOW="" RED="" RESET=""
 fi
 
-# Diretórios e padrões
+# Standard directories
 BUILD_DIR="build"
 BIN_DIR="bin"
 EXECUTABLE="@PROJECT_NAME@"  # Ajuste conforme seu CMakeLists.txt
 WATCH_DIRS=("src" "modules" "libF77")
 WATCH_PATTERN='\.f90$|\.f$'
 
-# Dependências
+# Dependencies
 DEPENDENCIES=(cmake gfortran make inotify-tools)
 
-# ========================== FUNÇÕES ===========================
+# ======================== FUNCTIONS ===========================
 
 build() {
-  echo "${BLUE}:: Compilando o projeto...${RESET}"
+  echo "${BLUE}:: Project building...${RESET}"
   cmake -B "$BUILD_DIR" -S .
   cmake --build "$BUILD_DIR"
-  echo "-> ${GREEN}Build finalizado.${RESET}"
+  echo "-> ${GREEN}Build completed.${RESET}"
 }
 
 run() {
-  echo "${CYAN}:: Executando o projeto...${RESET}"
+  echo "${CYAN}:: Executing...${RESET}"
   "./$BIN_DIR/$EXECUTABLE"
 }
 
 install() {
-  echo "${GREEN}:: Verificando dependências...${RESET}"
+  echo "${GREEN}:: Verifying dependences...${RESET}"
   for dep in "${DEPENDENCIES[@]}"; do
     if ! command -v "$dep" &>/dev/null; then
-      echo "${YELLOW}-- Instalando dependência:${RESET} $dep"
+      echo "${YELLOW}-- Installing dependences...:${RESET} $dep"
       if command -v apt &>/dev/null; then
         sudo apt update && sudo apt install -y "$dep"
       elif command -v dnf &>/dev/null; then
@@ -47,39 +47,39 @@ install() {
       elif command -v pacman &>/dev/null; then
         sudo pacman -Sy "$dep" --noconfirm
       else
-        echo "${RED}Gerenciador de pacotes não suportado. Instale $dep manualmente.${RESET}"
+        echo "${RED}Package Manager not supported. Please Install $dep manually${RESET}"
       fi
     else
-      echo "-- $dep já instalado."
+      echo "-- $dep Already Installed."
     fi
   done
-  echo "${GREEN}:: Todas dependências atendidas.${RESET}"
+  echo "${GREEN}:: All dependences installed.${RESET}"
 }
 
 test_project() {
-  echo "${YELLOW}:: Executando testes...${RESET}"
+  echo "${YELLOW}:: Executing tests...${RESET}"
   ctest --test-dir "$BUILD_DIR"
 }
 
 clean() {
-  echo "${RED}:: Limpando artefatos de build...${RESET}"
+  echo "${RED}:: Cleaning build...${RESET}"
   rm -rf "$BUILD_DIR" "$BIN_DIR"
-  echo "${GREEN}:: Limpeza concluída.${RESET}"
+  echo "${GREEN}:: Cleaned.${RESET}"
 }
 
 watch() {
-  echo "${BLUE}:: Monitorando alterações...${RESET}"
+  echo "${BLUE}:: Watching for changes...${RESET}"
   command -v inotifywait &>/dev/null || {
-    echo "${RED}inotifywait não encontrado.${RESET}"
+    echo "${RED} inotifywait not found.${RESET}"
     exit 1
   }
   while true; do
     inotifywait -e modify -e create -e delete --include "$WATCH_PATTERN" "${WATCH_DIRS[@]}"
-    echo "${YELLOW}:: Alteração detectada. Recompilando...${RESET}"
+    echo "${YELLOW}:: Changes detected. Reconfiguring...${RESET}"
     if build; then
       run
     else
-      echo "${RED}:: Erro no build. Aguardando alterações...${RESET}"
+      echo "${RED}:: Build failed...${RESET}"
     fi
   done
 }
@@ -89,18 +89,18 @@ help() {
 Usage: ./launch.sh <comando>
 
 Comandos disponíveis:
-  install     Verificar e instalar dependências
-  build       Compilar o projeto
-  run         Executar o binário principal
-  test        Rodar testes (CTest)
-  clean       Remover artefatos de build
-  watch       Recompilar automaticamente ao detectar mudanças
-  help        Exibir esta ajuda
+  install     Verify and install dependences
+  build       Project build
+  run         Run project
+  test        Test project (CTest)
+  clean       Remove build
+  watch       Automatically recompile when files change
+  help        Show this help
 
 EOF
 }
 
-# ========================== EXECUÇÃO ===========================
+# ========================== EXECUTION ===========================
 
 case "${1:-}" in
   install) install ;;

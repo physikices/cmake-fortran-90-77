@@ -33,13 +33,13 @@ render_template() {
 # Generate files from templates
 render_template "$TEMPLATE_DIR/CMakeLists.txt.in" "$PROJECT_NAME/CMakeLists.txt"
 render_template "$TEMPLATE_DIR/libF77_CMakeLists.txt.in" "$PROJECT_NAME/libF77/CMakeLists.txt"
+render_template "$TEMPLATE_DIR/tests_CMakeLists.txt.in" "$PROJECT_NAME/tests/CMakeLists.txt"
 render_template "$TEMPLATE_DIR/utils.f.in" "$PROJECT_NAME/libF77/utils.f"
 render_template "$TEMPLATE_DIR/physics_model.f90.in" "$PROJECT_NAME/modules/physics_model.f90"
 render_template "$TEMPLATE_DIR/main.f90.in" "$PROJECT_NAME/src/main.f90"
 render_template "$TEMPLATE_DIR/test.f90.in" "$PROJECT_NAME/tests/test.f90"
 render_template "$TEMPLATE_DIR/gitignore.in" "$PROJECT_NAME/.gitignore"
 render_template "$TEMPLATE_DIR/launch.sh.in" "$PROJECT_NAME/launch.sh"
-
 # Inicializar Git
 cd "$DEST_DIR"
 git init
