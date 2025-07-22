@@ -1,124 +1,120 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-COLOR_SCRIPT="$(dirname "$0")/scripts/colors.sh"
+# ========================== CONFIGURAÇÕES ===========================
+
+# Cores
+COLOR_SCRIPT="$(dirname "$0")/.term/colors.sh"
 if [[ -f "$COLOR_SCRIPT" ]]; then
   source "$COLOR_SCRIPT"
 else
-  echo "Warning: colors.sh not found, proceeding without color output."
   BLUE="" CYAN="" GREEN="" YELLOW="" RED="" RESET=""
 fi
 
-# Environment variables
+# Diretórios e padrões
 BUILD_DIR="build"
-SRC_DIR="src"
 BIN_DIR="bin"
+EXECUTABLE="@PROJECT_NAME@"  # Ajuste conforme seu CMakeLists.txt
 WATCH_DIRS=("src" "modules" "libF77")
 WATCH_PATTERN='\.f90$|\.f$'
 
-# Exectable name
-EXECUTABLE="@PROJECT_NAME@.bin"
+# Dependências
+DEPENDENCIES=(cmake gfortran make inotify-tools)
 
-# Build function
+# ========================== FUNÇÕES ===========================
+
 build() {
-  echo "${BLUE}:: Building project...${RESET}"
-  if ! cmake -B "$BUILD_DIR" -S .; then
-    echo "${RED}CMake configuration failed.${RESET}"
-    exit 1
-  fi
-  if ! cmake --build "$BUILD_DIR"; then
-    echo "${RED}Build failed.${RESET}"
-    exit 1
-  fi
-  echo "-> ${CYAN}Build complete.${RESET}"
+  echo "${BLUE}:: Compilando o projeto...${RESET}"
+  cmake -B "$BUILD_DIR" -S .
+  cmake --build "$BUILD_DIR"
+  echo "-> ${GREEN}Build finalizado.${RESET}"
 }
 
-# Run function
 run() {
-  echo "${CYAN}:: Running project...${RESET}"
-  exec "./$BIN_DIR/$EXECUTABLE"
+  echo "${CYAN}:: Executando o projeto...${RESET}"
+  "./$BIN_DIR/$EXECUTABLE"
 }
 
-# Function to install dependencies
 install() {
-  echo "${GREEN}:: Checking dependencies...${RESET}"
-
-  # List of required command-line tools
-  local dependencies=(cmake gfortran make inotifywait)
-  # List of required command-line tools
-  local dependencies=(cmake gfortran make inotify-tools)
-
-  for dep in "${dependencies[@]}"; do
-    if ! command -v "$dep" &> /dev/null; then
-      echo "${YELLOW}-- dependency not found:${RESET} $dep"
-      echo "${GREEN} Installing${RESET} $dep..."
-
-      if [[ -x "$(command -v apt)" ]]; then
+  echo "${GREEN}:: Verificando dependências...${RESET}"
+  for dep in "${DEPENDENCIES[@]}"; do
+    if ! command -v "$dep" &>/dev/null; then
+      echo "${YELLOW}-- Instalando dependência:${RESET} $dep"
+      if command -v apt &>/dev/null; then
         sudo apt update && sudo apt install -y "$dep"
-      elif [[ -x "$(command -v dnf)" ]]; then
+      elif command -v dnf &>/dev/null; then
         sudo dnf install -y "$dep"
-      elif [[ -x "$(command -v pacman)" ]]; then
+      elif command -v pacman &>/dev/null; then
         sudo pacman -Sy "$dep" --noconfirm
       else
-        echo "-> Unsupported package manager. Please install $dep manually."
+        echo "${RED}Gerenciador de pacotes não suportado. Instale $dep manualmente.${RESET}"
       fi
     else
-      echo "-- $dep is already installed."
+      echo "-- $dep já instalado."
     fi
   done
-
-  echo "${GREEN}-- All dependencies are up to date.${RESET}"
+  echo "${GREEN}:: Todas dependências atendidas.${RESET}"
 }
 
-# Function to run tests
 test_project() {
-  echo "${YELLOW}:: Running tests...${RESET}"
+  echo "${YELLOW}:: Executando testes...${RESET}"
   ctest --test-dir "$BUILD_DIR"
 }
 
-# Function to clean build artifacts
 clean() {
-  echo "${RED}:: Cleaning build artifacts...${RESET}"
+  echo "${RED}:: Limpando artefatos de build...${RESET}"
   rm -rf "$BUILD_DIR" "$BIN_DIR"
-  echo "${GREEN}:: Clean complete.${RESET}"
+  echo "${GREEN}:: Limpeza concluída.${RESET}"
 }
 
-# Function to watch for changes
 watch() {
-  echo "${BLUE}:: Watching for changes in .f90 or .f files...${RESET}"
-  command -v inotifywait >/dev/null 2>&1 || {
-    echo "-> '${YELLOW}inotifywait' is not installed. Run: sudo pacman -Syyu inotify-tools${RESET}"
-      exit 1
-    }
-
+  echo "${BLUE}:: Monitorando alterações...${RESET}"
+  command -v inotifywait &>/dev/null || {
+    echo "${RED}inotifywait não encontrado.${RESET}"
+    exit 1
+  }
   while true; do
     inotifywait -e modify -e create -e delete --include "$WATCH_PATTERN" "${WATCH_DIRS[@]}"
-    echo "${YELLOW}:: Change detected. Rebuilding...${RESET}"
-    build
-    "./$BIN_DIR/$EXECUTABLE"
+    echo "${YELLOW}:: Alteração detectada. Recompilando...${RESET}"
+    if build; then
+      run
+    else
+      echo "${RED}:: Erro no build. Aguardando alterações...${RESET}"
+    fi
   done
 }
 
-# Help
 help() {
-  echo "Usage: ./launch.sh <command>"
-  echo ""
-  echo "Available commands:"
-  echo "  build       Build the project with CMake"
-  echo "  run         Run the main executable"
-  echo "  test        Run tests with CTest"
-  echo "  install     Install system or library dependencies"
-  echo "  clean       Clean build artifacts"
-  echo "  help        Show this message"
+  cat <<EOF
+Usage: ./launch.sh <comando>
+
+Comandos disponíveis:
+  install     Verificar e instalar dependências
+  build       Compilar o projeto
+  run         Executar o binário principal
+  test        Rodar testes (CTest)
+  clean       Remover artefatos de build
+  watch       Recompilar automaticamente ao detectar mudanças
+  help        Exibir esta ajuda
+
+EOF
 }
 
-# Main commands
-case "${1:-help}" in
+# ========================== EXECUÇÃO ===========================
+
+case "${1:-}" in
   install) install ;;
   build) build ;;
   run) run ;;
   test) test_project ;;
   watch) watch ;;
   clean) clean ;;
-  *) help ;;
+  help) help ;;
+  "")
+    echo "${YELLOW}Nenhum comando fornecido. Executando build + run...${RESET}"
+    build
+    run
+    ;;
+  *)
+    help ;;
 esac

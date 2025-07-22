@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source "$(dirname "$0")/scripts/colors.sh"
+source "$(dirname "$0")/.term/colors.sh"
 
 # Directories
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMPLATE_DIR="$SCRIPT_DIR/templates"
-COLOR_SCRIPT="$SCRIPT_DIR/scripts/colors.sh"
+COLOR_SCRIPT="$SCRIPT_DIR/.term/colors.sh"
 
 # Prompt for project name
 read -rp "Enter project name (default: my_project): " PROJECT_NAME
@@ -15,10 +15,10 @@ read -rp "Enter project description: " PROJECT_DESC
 
 # Create project directories
 DEST_DIR="$SCRIPT_DIR/$PROJECT_NAME"
-mkdir -p "$DEST_DIR"/{src,modules,libF77,tests,bin,scripts}
+mkdir -p "$DEST_DIR"/{src,modules,libF77,tests,bin,.term}
 
 # Copy color utility
-cp "$COLOR_SCRIPT" "$PROJECT_NAME/scripts/colors.sh"
+cp "$COLOR_SCRIPT" "$PROJECT_NAME/.term/colors.sh"
 
 # Function to render templates
 render_template() {
@@ -33,8 +33,6 @@ render_template() {
 # Generate files from templates
 render_template "$TEMPLATE_DIR/CMakeLists.txt.in" "$PROJECT_NAME/CMakeLists.txt"
 render_template "$TEMPLATE_DIR/libF77_CMakeLists.txt.in" "$PROJECT_NAME/libF77/CMakeLists.txt"
-render_template "$TEMPLATE_DIR/modules_CMakeLists.txt.in" "$PROJECT_NAME/modules/CMakeLists.txt"
-render_template "$TEMPLATE_DIR/tests_CMakeLists.txt.in" "$PROJECT_NAME/tests/CMakeLists.txt"
 render_template "$TEMPLATE_DIR/utils.f.in" "$PROJECT_NAME/libF77/utils.f"
 render_template "$TEMPLATE_DIR/physics_model.f90.in" "$PROJECT_NAME/modules/physics_model.f90"
 render_template "$TEMPLATE_DIR/main.f90.in" "$PROJECT_NAME/src/main.f90"

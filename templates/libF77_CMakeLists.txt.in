@@ -1,3 +1,9 @@
-file(GLOB lib_sources CONFIGURE_DEPENDS *.f)
-add_library(${PROJECT_NAME}-libF77 STATIC ${lib_sources})
-target_include_directories(${PROJECT_NAME}-libF77 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+# libF77/CMakeLists.txt
+
+file(GLOB_RECURSE dir_libs ${CMAKE_CURRENT_SOURCE_DIR}/*.f)
+
+add_library(@PROJECT_NAME@_libf77 STATIC ${dir_libs})
+
+set_target_properties(@PROJECT_NAME@_libf77 PROPERTIES
+  OUTPUT_NAME @PROJECT_NAME@_libf77
+)

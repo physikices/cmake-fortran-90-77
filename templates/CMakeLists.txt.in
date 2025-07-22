@@ -1,22 +1,42 @@
 cmake_minimum_required(VERSION 3.21)
-project(@PROJECT_NAME@.bin
+project(@PROJECT_NAME@
   VERSION 0.1.0
   DESCRIPTION "@PROJECT_DESC@"
   LANGUAGES Fortran
 )
 
-enable_language(Fortran)
+# Bibliotecas externas
+add_subdirectory(libF77)
+
+# Diretório de executáveis
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
-add_subdirectory(libF77)
-add_subdirectory(modules)
-add_subdirectory(tests)
-enable_testing()
+# Flags
+add_compile_options("-Wa,--noexecstack")
 
-add_executable(${PROJECT_NAME})
-target_sources(${PROJECT_NAME} PRIVATE src/main.f90)
-target_link_libraries(${PROJECT_NAME}
-  PRIVATE ${PROJECT_NAME}-modules
-  PRIVATE ${PROJECT_NAME}-libF77
+# Módulos
+file(GLOB_RECURSE dir_modules ${CMAKE_SOURCE_DIR}/modules/*.f90)
+
+add_library(@PROJECT_NAME@_modules STATIC ${dir_modules})
+set_target_properties(@PROJECT_NAME@_modules PROPERTIES
+  Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/modules
 )
-target_include_directories(${PROJECT_NAME} PRIVATE modules)
+target_include_directories(@PROJECT_NAME@_modules PUBLIC ${CMAKE_BINARY_DIR}/modules)
+
+# Programa principal
+add_executable(@PROJECT_NAME@ ${CMAKE_SOURCE_DIR}/src/main.f90)
+target_link_libraries(@PROJECT_NAME@
+  PRIVATE @PROJECT_NAME@_modules
+  PRIVATE @PROJECT_NAME@_libf77  # Caso esta seja sua lib real
+)
+target_include_directories(@PROJECT_NAME@ PRIVATE ${CMAKE_BINARY_DIR}/modules)
+
+# Testes
+enable_testing()
+add_executable(@PROJECT_NAME@_test ${CMAKE_SOURCE_DIR}/tests/test.f90)
+target_link_libraries(@PROJECT_NAME@_test
+  PRIVATE @PROJECT_NAME@_modules
+  PRIVATE @PROJECT_NAME@_libf77
+)
+target_include_directories(@PROJECT_NAME@_test PRIVATE ${CMAKE_BINARY_DIR}/modules)
+add_test(NAME TestModule COMMAND @PROJECT_NAME@_test)
