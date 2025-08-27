@@ -4,7 +4,7 @@ set -euo pipefail
 # ========================== CONFIGURATION ===========================
 
 # Colors
-COLOR_SCRIPT="$(dirname "$0")/.term/colors.sh"
+COLOR_SCRIPT="$(dirname "$0")/.dev/termcolors.sh"
 if [[ -f "$COLOR_SCRIPT" ]]; then
   source "$COLOR_SCRIPT"
 else
@@ -15,6 +15,7 @@ fi
 BUILD_DIR="build"
 BIN_DIR="bin"
 EXECUTABLE="@PROJECT_NAME@"  # Ajuste conforme seu CMakeLists.txt
+EXECUTABLE_TEST="@PROJECT_NAME@"_test
 WATCH_DIRS=("src" "modules" "libF77")
 WATCH_PATTERN='\.f90$|\.f$'
 
@@ -59,6 +60,7 @@ install() {
 test_project() {
   echo "${YELLOW}:: Executing tests...${RESET}"
   ctest --test-dir "$BUILD_DIR"
+  "./$BIN_DIR/$EXECUTABLE_TEST"
 }
 
 clean() {

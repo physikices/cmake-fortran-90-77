@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source "$(dirname "$0")/.term/colors.sh"
+source "$(dirname "$0")/.dev/termcolors.sh"
 
 # Directories
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMPLATE_DIR="$SCRIPT_DIR/templates"
-COLOR_SCRIPT="$SCRIPT_DIR/.term/colors.sh"
+COLOR_SCRIPT="$SCRIPT_DIR/.dev/termcolors.sh"
 
 # Prompt for project name
 read -rp "Enter project name (default: my_project): " PROJECT_NAME
@@ -15,10 +15,10 @@ read -rp "Enter project description: " PROJECT_DESC
 
 # Create project directories
 DEST_DIR="$SCRIPT_DIR/$PROJECT_NAME"
-mkdir -p "$DEST_DIR"/{src,modules,libF77,tests,bin,.term}
+mkdir -p "$DEST_DIR"/{src,modules,libF77,tests,bin,.dev}
 
 # Copy color utility
-cp "$COLOR_SCRIPT" "$PROJECT_NAME/.term/colors.sh"
+cp "$COLOR_SCRIPT" "$PROJECT_NAME/.dev/termcolors.sh"
 
 # Function to render templates
 render_template() {
