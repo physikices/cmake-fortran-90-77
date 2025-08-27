@@ -39,6 +39,7 @@ render_template "$TEMPLATE_DIR/physics_model.f90.in" "$PROJECT_NAME/modules/phys
 render_template "$TEMPLATE_DIR/main.f90.in" "$PROJECT_NAME/src/main.f90"
 render_template "$TEMPLATE_DIR/test.f90.in" "$PROJECT_NAME/tests/test.f90"
 render_template "$TEMPLATE_DIR/gitignore.in" "$PROJECT_NAME/.gitignore"
+render_template "$TEMPLATE_DIR/fortls.json.in" "$PROJECT_NAME/.fortls.json"
 render_template "$TEMPLATE_DIR/launch.sh.in" "$PROJECT_NAME/launch.sh"
 # Inicializar Git
 cd "$DEST_DIR"

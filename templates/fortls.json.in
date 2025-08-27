@@ -1,0 +1,34 @@
+{
+   "nthreads": 4,
+   "notify_init": true,
+   "incremental_sync": true,
+   "sort_keywords": true,
+   "disable_autoupdate": true,
+   "debug_log": true,
+
+   "source_dirs": ["./**"],
+   "incl_suffixes": [],
+   "excl_suffixes": [],
+   "excl_paths": [],
+
+   "autocomplete_no_prefix": true,
+   "autocomplete_no_snippets": true,
+   "autocomplete_name_only": true,
+   "lowercase_intrinsics": true,
+   "use_signature_help": true,
+
+   "hover_signature": false,
+   "hover_language": "fortran90",
+
+   "max_line_length": -1,
+   "max_comment_line_length": -1,
+   "disable_diagnostics": false,
+
+   "pp_suffixes": [],
+   "include_dirs": [],
+   "pp_defs": {},
+
+   "symbol_skip_mem": false,
+
+   "enable_code_actions": true
+}
