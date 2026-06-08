@@ -20,7 +20,7 @@ my_project/
 ├── libF77/ # Auxiliary F77 routines
 ├── tests/ # Unit test programs
 ├── bin/ # Output binaries
-├── scripts/ # Utility shell scripts
+├── .dev/ # Helper scripts used by launch.sh
 ├── CMakeLists.txt # Main CMake build configuration
 ├── launch.sh # Script to build/run/test the executables
 └── .gitignore
@@ -70,20 +70,20 @@ cd ..
 The main executable will be generated in:
 
 ```bash
-bin/my_project.bin
+bin/my_project
 ```
 
 ### 2. Run the Program
 
 ```bash
-./bin/my_project.bin
+./bin/my_project
 ```
 
 Expected output:
 
 ```kotlin
 ========== T4C FORTRAN PROJECT ==========
-Physical function result =   10.0000000000000
+Function value =   10.0000000000000
 ```
 
 ---
@@ -105,8 +105,8 @@ cd ..
 
 ```bash
 Test project /path/to/build
-    Start 1: run_tests
-1/1 Test #1: run_tests ..................   Passed
+    Start 1: TestModule
+1/1 Test #1: TestModule ..................   Passed
 ```
 ---
 
@@ -114,7 +114,6 @@ Test project /path/to/build
 
 For development, you can enable automatic rebuilds when Fortran files change, in the created project folder, e.g. `my_project/`, run the commands:
 ```bash
- chmod +x launch.sh
  ./launch.sh watch
 ```
 

@@ -14,13 +14,13 @@ fi
 # Standard directories
 BUILD_DIR="build"
 BIN_DIR="bin"
-EXECUTABLE="@PROJECT_NAME@"  # Ajuste conforme seu CMakeLists.txt
+EXECUTABLE="@PROJECT_NAME@"
 EXECUTABLE_TEST="@PROJECT_NAME@"_test
 WATCH_DIRS=("src" "modules" "libF77")
 WATCH_PATTERN='\.f90$|\.f$'
 
 # Dependencies
-DEPENDENCIES=(cmake gfortran make inotify-tools)
+REQUIRED_COMMANDS=(cmake gfortran make inotifywait)
 
 # ======================== FUNCTIONS ===========================
 
@@ -38,20 +38,23 @@ run() {
 
 install() {
   echo "${GREEN}:: Verifying dependences...${RESET}"
-  for dep in "${DEPENDENCIES[@]}"; do
-    if ! command -v "$dep" &>/dev/null; then
-      echo "${YELLOW}-- Installing dependences...:${RESET} $dep"
+  for cmd in "${REQUIRED_COMMANDS[@]}"; do
+    if ! command -v "$cmd" &>/dev/null; then
+      package="$cmd"
+      [[ "$cmd" == "inotifywait" ]] && package="inotify-tools"
+
+      echo "${YELLOW}-- Installing dependences...:${RESET} $package"
       if command -v apt &>/dev/null; then
-        sudo apt update && sudo apt install -y "$dep"
+        sudo apt update && sudo apt install -y "$package"
       elif command -v dnf &>/dev/null; then
-        sudo dnf install -y "$dep"
+        sudo dnf install -y "$package"
       elif command -v pacman &>/dev/null; then
-        sudo pacman -Sy "$dep" --noconfirm
+        sudo pacman -Sy "$package" --noconfirm
       else
-        echo "${RED}Package Manager not supported. Please Install $dep manually${RESET}"
+        echo "${RED}Package Manager not supported. Please install $package manually.${RESET}"
       fi
     else
-      echo "-- $dep Already Installed."
+      echo "-- $cmd already installed."
     fi
   done
   echo "${GREEN}:: All dependences installed.${RESET}"
